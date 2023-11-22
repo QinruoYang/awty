@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.telephony.SmsManager
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
@@ -40,12 +41,19 @@ class MessageService : Service() {
         timer?.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 Handler(Looper.getMainLooper()).post {
-                    showCustomToast(formattedPhoneNumber, message)
+//                    showCustomToast(formattedPhoneNumber, message)
+                    sendSmsMessage(formattedPhoneNumber, message)
                 }
             }
         }, 0, timeInMillis)
 
         return START_STICKY
+    }
+
+
+    private fun sendSmsMessage(phoneNumber: String, message: String) {
+        val smsManager = SmsManager.getDefault()
+        smsManager.sendTextMessage(phoneNumber, null, message, null, null)
     }
 
     private fun formatPhoneNumber(phoneNumber: String): String {
@@ -56,7 +64,6 @@ class MessageService : Service() {
             "Invalid number"
         }
     }
-
 
     override fun onBind(intent: Intent): IBinder? {
         return null
